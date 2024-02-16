@@ -1,7 +1,7 @@
 ---
 - name: Debian - Ensure apt-transport-https is installed
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     name: apt-transport-https
     state: present
     cache_valid_time: 86400
@@ -11,8 +11,8 @@
   notify: restart the service
 
 - name: Debian - Ensure python-urllib3, python-openssl, python-pyasn1 & python-pip are installed
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     name:
       - python-urllib3
       - python-openssl
@@ -26,8 +26,8 @@
     - ansible_distribution_release == "trusty"
 
 - name: Debian - ensure ndg-httpsclient pip is installed
-  become: yes
-  pip:
+  become: true
+  ansible.builtin.pip:
     name: ndg-httpsclient
     state: present
   register: ndg_install
@@ -37,8 +37,8 @@
     - ansible_distribution_release == "trusty"
 
 - name: Debian - Add Beats repository key
-  become: yes
-  apt_key:
+  become: true
+  ansible.builtin.apt_key:
     url: "{{ elastic_repo_key }}"
     state: present
   register: apt_key_install
@@ -46,8 +46,8 @@
   when: beats_add_repository | bool
 
 - name: Debian - add beats repository
-  become: yes
-  apt_repository:
+  become: true
+  ansible.builtin.apt_repository:
     repo: "deb {{ repo_url }} stable main"
     state: present
   register: repo_install
@@ -55,22 +55,22 @@
   when: beats_add_repository | bool
 
 - name: Debian - Check if {{ beat }} package is installed
-  package_facts:
+  ansible.builtin.package_facts:
     manager: apt
 
 - name: Debian - unhold {{ beat }} version for install
-  become: yes
-  dpkg_selections:
+  become: true
+  ansible.builtin.dpkg_selections:
     name: "{{ beat }}"
     selection: "install"
   when: beat in ansible_facts.packages
   changed_when: false
 
 - name: Debian - Ensure {{ beat }} is installed
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     name: >-
-      {{ beat }}{% if beats_version is defined and beats_version|length>0 %}={{ beats_version }}{% endif %}
+      {{ beat }}{% if beats_version is defined and beats_version | length > 0 %}={{ beats_version }}{% endif %}
     state: present
     cache_valid_time: 86400
   register: beat_install
@@ -79,30 +79,33 @@
   notify: restart the service
 
 - name: Debian - hold {{ beat }} version
-  become: yes
-  dpkg_selections:
+  become: true
+  ansible.builtin.dpkg_selections:
     name: "{{ beat }}"
     selection: "hold"
   when: version_lock
   changed_when: false
 
 - name: Set os_arch
-  set_fact:
+  ansible.builtin.set_fact:
     os_arch: >-
       {{ ansible_architecture == 'x86_64' | ternary('amd64', 'i386') }}
 
 - name: Debian - Download {{ beat }} from url
-  get_url:
+  ansible.builtin.get_url:
     url: >-
       {% if custom_package_url is defined %}{{ custom_package_url }}{%
         else %}{{ beats_package_url }}/{{ beat }}/{{ beat }}_{{ beats_version }}_{{ os_arch }}.deb{% endif %}
     dest: "/tmp/{{ beat }}_{{ beats_version }}_{{ os_arch }}.deb"
+    mode: '0644'
+    owner: root
+    group: root
     validate_certs: false
   when: not use_repository | bool
 
 - name: Debian - Ensure {{ beat }} is installed from downloaded package
-  become: yes
-  apt:
+  become: true
+  ansible.builtin.apt:
     deb: "/tmp/{{ beat }}_{{ beats_version }}_{{ os_arch }}.deb"
   when: not use_repository | bool
   notify: restart the service

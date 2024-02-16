@@ -54,5 +54,5 @@
     - timeout:
         type: absolute
         timeout: 360
-        fail: true
+        ansible.builtin.fail: true
     - timestamps

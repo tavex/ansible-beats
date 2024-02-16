@@ -208,7 +208,7 @@ For example:
       metricbeat.modules:
         ...
   default_ilm_policy: conf/my-default-metricbeat.json
-  become: yes
+  become: true
 ```
 
 This will copy *conf/my-default-filebeat.json* to */etc/filebeat/policies/my-default-filebeat.json*.
