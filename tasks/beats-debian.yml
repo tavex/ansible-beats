@@ -57,7 +57,7 @@
       Types: deb
       Enabled: yes
       URIs: {{ elastic_repo_url }}
-      Suites: {{ ansible_distribution_release }}
+      Suites: stable
       Components: {{ elastic_repo_component }}
       Architectures: {{ 'amd64' if ansible_machine != 'aarch64' else 'arm64' }}
       Signed-By: {{ elastic_repo_key_file_path }}
