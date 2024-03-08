@@ -36,11 +36,40 @@
     - use_repository | bool
     - ansible_distribution_release == "trusty"
 
+- name: Install beats repo key
+  ansible.builtin.get_url:
+    url: "{{ elastic_repo_key_url }}"
+    dest: "{{ elastic_repo_key_file_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  register: deb822_apt_key_install
+  until: deb822_apt_key_install is succeeded
+  when: beats_add_repository | bool and not ansible_check_mode
+
+- name: Adding apt repository for beats
+  ansible.builtin.copy:
+    dest: "{{ elastic_repo_file_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      Types: deb
+      Enabled: yes
+      URIs: {{ elastic_repo_url }}
+      Suites: {{ ansible_distribution_release }}
+      Components: {{ elastic_repo_component }}
+      Architectures: {{ 'amd64' if ansible_machine != 'aarch64' else 'arm64' }}
+      Signed-By: {{ elastic_repo_key_file_path }}
+  register: deb822_repo_install
+  until: deb822_repo_install is succeeded
+  when: beats_add_repository | bool
+
 - name: Debian - Add Beats repository key
   become: true
   ansible.builtin.apt_key:
-    url: "{{ elastic_repo_key }}"
-    state: present
+    url: "{{ elastic_repo_key_url }}"
+    state: absent
   register: apt_key_install
   until: apt_key_install is succeeded
   when: beats_add_repository | bool
@@ -48,8 +77,8 @@
 - name: Debian - add beats repository
   become: true
   ansible.builtin.apt_repository:
-    repo: "deb {{ repo_url }} stable main"
-    state: present
+    repo: "deb {{ elastic_repo_url }} stable main"
+    state: absent
   register: repo_install
   until: repo_install is succeeded
   when: beats_add_repository | bool

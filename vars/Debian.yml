@@ -1,3 +1,6 @@
 ---
 default_file: "/etc/default"
-repo_url: "https://artifacts.elastic.co/packages/{{ beats_major_version }}/apt"
+elastic_repo_url: "https://artifacts.elastic.co/packages/{{ beats_major_version }}/apt"
+elastic_repo_key_file_path: /etc/apt/trusted.gpg.d/elastic.asc
+elastic_repo_file_path: /etc/apt/sources.list.d/elastic.sources
+elastic_repo_component: main
