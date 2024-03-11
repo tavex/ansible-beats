@@ -56,7 +56,7 @@
     force: true
     owner: root
     group: root
-  notify: restart the service
+  notify: Restart the service
 
 # Copy templated config file
 - name: Copy Configuration File for {{ beat }}
@@ -69,7 +69,7 @@
     owner: root
     group: root
     backup: true
-  notify: restart the service
+  notify: Restart the service
 
 # Copy default ILM policy file
 - name: Create default policies config directory
@@ -91,4 +91,4 @@
     owner: root
     group: root
   when: default_ilm_policy is defined
-  notify: restart the service
+  notify: Restart the service

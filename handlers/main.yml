@@ -1,7 +1,7 @@
 ---
 # handlers file for beats
 
-- name: restart the service
+- name: Restart the service
   become: true
   ansible.builtin.service:
     name: "{{ beat_product }}"

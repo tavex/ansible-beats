@@ -14,7 +14,7 @@
   ansible.builtin.include_tasks: beats-config.yml
 
 # Make sure the service is started, and restart if necessary
-- name: Start {{ beat_product }} service
+- name: Start service {{ beat_product }}
   become: true
   ansible.builtin.service:
     name: '{{ beat }}'

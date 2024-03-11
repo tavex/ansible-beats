@@ -27,7 +27,7 @@
   tags:
     - skip_ansible_lint
 
-- name: RedHat - Ensure {{ beat }} is installed
+- name: RedHat - Ensure beat is installed - {{ beat }}
   become: true
   ansible.builtin.yum:
     name: >-
@@ -37,9 +37,9 @@
   register: beat_install
   until: beat_install is succeeded
   when: use_repository | bool
-  notify: restart the service
+  notify: Restart the service
 
-- name: RedHat - lock {{ beat }} version
+- name: RedHat - lock beat version - {{ beat }}
   become: true
   shell: >-
     yum versionlock add
@@ -49,7 +49,7 @@
   tags:
     - skip_ansible_lint
 
-- name: RedHat - Install {{ beat }} from url
+- name: RedHat - Install beat from url - {{ beat }}
   become: true
   ansible.builtin.yum:
     name: >-
@@ -59,4 +59,4 @@
   register: beat_install
   until: beat_install is succeeded
   when: not use_repository
-  notify: restart the service
+  notify: Restart the service
