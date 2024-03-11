@@ -13,6 +13,3 @@
 
 - name: Install beats
   ansible.builtin.include_tasks: beats.yml
-
-- name: Force all notified handlers to run at this point, not waiting for normal sync points
-  ansible.builtin.meta: flush_handlers
